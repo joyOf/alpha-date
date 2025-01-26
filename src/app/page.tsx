@@ -33,17 +33,41 @@ const data = [
 
 export default function Home() {
   const [dateIdea, setDateIdea] = useState('Pick a letter.');
+  const [pickedLetter, setPickedLetter] = useState('A');
 
   function handleLetter(letter: string) {
-    const chosenDateIdea = data.find((l) => l.id === letter)?.idea;
-    const showDateIdea = chosenDateIdea || 'Something went wrong';
-    setDateIdea(showDateIdea);
+    setPickedLetter(letter);
+    const items = data.find((entry) => entry.id === letter);
+    const idea = items?.ideas[0];
+    setDateIdea(idea || 'Something went wrong');
+  }
+
+  function shuffle() {
+    const item = data.find((entry) => entry.id === pickedLetter);
+    if (!item) return;
+
+    const availableIdeas = item.ideas.filter((idea) => idea !== dateIdea);
+
+    if (availableIdeas.length === 0) {
+      setDateIdea('No more unique ideas available');
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * availableIdeas.length);
+    setDateIdea(availableIdeas[randomIndex]);
+  }
+
+  function surprise() {
+    const allIdeas = data.flatMap((entry) => entry.ideas);
+    const randomIndex = Math.floor(Math.random() * allIdeas.length);
+    const randomIdea = allIdeas[randomIndex];
+    setDateIdea(randomIdea);
   }
 
   return (
     <div className="flex flex-col h-screen bg-black text-white">
       <Display dateIdea={dateIdea} />
-      <Keypad handleLetter={handleLetter} />
+      <Keypad handleLetter={handleLetter} handleShuffle={shuffle} handleSurprise={surprise} />
     </div>
   );
 }
@@ -59,7 +83,7 @@ function LetterButton({ id, handleLetter }: { id: string; handleLetter: (letter:
   );
 }
 
-function Alphabet({ handleLetter }: { handleLetter: (letter: string) => void }) {
+function Alphabet({ handleLetter, handleShuffle, handleSurprise }: { handleLetter: (letter: string) => void; handleShuffle: () => void; handleSurprise: () => void }) {
   const alphabet = data.map((letter) => (
     <LetterButton key={letter.id} id={letter.id} handleLetter={handleLetter} />
   ));
@@ -67,14 +91,16 @@ function Alphabet({ handleLetter }: { handleLetter: (letter: string) => void }) 
   return (
     <div className="grid grid-cols-4 gap-4 p-4 w-full max-w-screen-lg">
       {alphabet}
+      <ShuffleButton handleShuffle={handleShuffle} />
+      <SurpriseButton handleSurprise={handleSurprise} />
     </div>
   );
 }
 
-function Keypad({ handleLetter }: { handleLetter: (letter: string) => void }) {
+function Keypad({ handleLetter, handleShuffle, handleSurprise }: { handleLetter: (letter: string) => void; handleShuffle: () => void; handleSurprise: () => void }) {
   return (
     <div className="flex items-center justify-center w-full p-4">
-      <Alphabet handleLetter={handleLetter} />
+      <Alphabet handleLetter={handleLetter} handleShuffle={handleShuffle} handleSurprise={handleSurprise} />
     </div>
   );
 }
@@ -87,13 +113,24 @@ function Display({ dateIdea }: { dateIdea: string }) {
   );
 }
 
-function ShuffleButton({ id, handleLetter }: { id: string; handleLetter: (letter: string) => void }) {
+function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
   return (
     <button
       className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
-      onClick={() => handleLetter(id)}
+      onClick={handleShuffle}
     >
-      <p className="font-bold">{id}</p>
+      <p className="font-bold">Shuffle</p>
+    </button>
+  );
+}
+
+function SurpriseButton({ handleSurprise }: { handleSurprise: () => void }) {
+  return (
+    <button
+      className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      onClick={handleSurprise}
+    >
+      <p className="font-bold">Surprise</p>
     </button>
   );
 }
