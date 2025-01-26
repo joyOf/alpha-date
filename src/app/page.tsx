@@ -105,7 +105,7 @@ function Display({ dateIdea }: { dateIdea: string }) {
 function LetterButton({ id, handleLetter }: { id: string; handleLetter: (letter: string) => void }) {
   return (
     <button
-      className="aspect-square w-full max-w-[100px] flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={() => handleLetter(id)}
     >
       <p className="font-bold text-xl lg:text-2xl">{id}</p>
@@ -116,7 +116,7 @@ function LetterButton({ id, handleLetter }: { id: string; handleLetter: (letter:
 function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
   return (
     <button
-      className="aspect-square w-full max-w-[100px] flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleShuffle}
     >
       <p className="font-bold text-xl lg:text-2xl">Shuffle</p>
@@ -127,7 +127,7 @@ function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
 function SurpriseButton({ handleSurprise }: { handleSurprise: () => void }) {
   return (
     <button
-      className="aspect-square w-full max-w-[100px] flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleSurprise}
     >
       <p className="font-bold text-xl lg:text-2xl">Surprise</p>
