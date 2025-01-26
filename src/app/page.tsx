@@ -65,21 +65,10 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-black text-white">
+    <div className="flex flex-col h-screen bg-black text-white w-full max-w-screen-lg mx-auto">
       <Display dateIdea={dateIdea} />
       <Keypad handleLetter={handleLetter} handleShuffle={shuffle} handleSurprise={surprise} />
     </div>
-  );
-}
-
-function LetterButton({ id, handleLetter }: { id: string; handleLetter: (letter: string) => void }) {
-  return (
-    <button
-      className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
-      onClick={() => handleLetter(id)}
-    >
-      <p className="font-bold">{id}</p>
-    </button>
   );
 }
 
@@ -89,7 +78,7 @@ function Alphabet({ handleLetter, handleShuffle, handleSurprise }: { handleLette
   ));
 
   return (
-    <div className="grid grid-cols-4 gap-4 p-4 w-full max-w-screen-lg">
+    <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4 w-full max-w-[800px] mx-auto">
       {alphabet}
       <ShuffleButton handleShuffle={handleShuffle} />
       <SurpriseButton handleSurprise={handleSurprise} />
@@ -113,13 +102,24 @@ function Display({ dateIdea }: { dateIdea: string }) {
   );
 }
 
+function LetterButton({ id, handleLetter }: { id: string; handleLetter: (letter: string) => void }) {
+  return (
+    <button
+      className="aspect-square w-full max-w-[100px] flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      onClick={() => handleLetter(id)}
+    >
+      <p className="font-bold text-xl lg:text-2xl">{id}</p>
+    </button>
+  );
+}
+
 function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
   return (
     <button
-      className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full max-w-[100px] flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleShuffle}
     >
-      <p className="font-bold">Shuffle</p>
+      <p className="font-bold text-xl lg:text-2xl">Shuffle</p>
     </button>
   );
 }
@@ -127,10 +127,10 @@ function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
 function SurpriseButton({ handleSurprise }: { handleSurprise: () => void }) {
   return (
     <button
-      className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full max-w-[100px] flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleSurprise}
     >
-      <p className="font-bold">Surprise</p>
+      <p className="font-bold text-xl lg:text-2xl">Surprise</p>
     </button>
   );
 }
