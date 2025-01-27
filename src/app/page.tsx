@@ -1,6 +1,8 @@
 'use client';
 
+import { Shuffle, Wand } from 'lucide-react';
 import { useState } from 'react';
+
 
 const data = [
   { id: 'A', ideas: ['Art gallery visit', 'Archery session', 'Amusement park day'] },
@@ -65,7 +67,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-black text-white w-full max-w-screen-lg mx-auto">
+    <div className="flex flex-col h-screen bg-black text-white w-full">
       <Display dateIdea={dateIdea} />
       <Keypad handleLetter={handleLetter} handleShuffle={shuffle} handleSurprise={surprise} />
     </div>
@@ -78,7 +80,7 @@ function Alphabet({ handleLetter, handleShuffle, handleSurprise }: { handleLette
   ));
 
   return (
-    <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4 w-full max-w-[800px] mx-auto">
+    <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2 w-full max-w-[800px] mx-auto">
       {alphabet}
       <ShuffleButton handleShuffle={handleShuffle} />
       <SurpriseButton handleSurprise={handleSurprise} />
@@ -96,7 +98,7 @@ function Keypad({ handleLetter, handleShuffle, handleSurprise }: { handleLetter:
 
 function Display({ dateIdea }: { dateIdea: string }) {
   return (
-    <div className="flex items-center justify-start h-1/5 p-4 text-left">
+    <div className="flex items-center justify-start h-1/5 p-4 w-full max-w-[800px] mx-auto">
       <h1 className="text-5xl font-medium">{dateIdea}</h1>
     </div>
   );
@@ -119,7 +121,8 @@ function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
       className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleShuffle}
     >
-      <p className="font-bold text-xl lg:text-2xl">Shuffle</p>
+      {/* <p className="font-bold text-xl lg:text-2xl">Shuffle</p> */}
+      <Shuffle />
     </button>
   );
 }
@@ -130,7 +133,8 @@ function SurpriseButton({ handleSurprise }: { handleSurprise: () => void }) {
       className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleSurprise}
     >
-      <p className="font-bold text-xl lg:text-2xl">Surprise</p>
+      {/* <p className="font-bold text-xl lg:text-2xl">Surprise</p> */}
+      <Wand />
     </button>
   );
 }
