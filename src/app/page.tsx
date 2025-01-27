@@ -2,7 +2,7 @@
 
 import { Shuffle, Wand } from 'lucide-react';
 import { useState } from 'react';
-
+import { useEffect } from 'react';
 
 const data = [
   { id: 'A', ideas: ['Art gallery visit', 'Archery session', 'Amusement park day'] },
@@ -34,6 +34,15 @@ const data = [
 ];
 
 export default function Home() {
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch('/api/data');
+      const result = await response.json();
+      console.log(result);
+    }
+    fetchData();
+  }, []);
+
   const [dateIdea, setDateIdea] = useState('Pick a letter.');
   const [pickedLetter, setPickedLetter] = useState('A');
 
@@ -121,7 +130,6 @@ function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
       className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleShuffle}
     >
-      {/* <p className="font-bold text-xl lg:text-2xl">Shuffle</p> */}
       <Shuffle />
     </button>
   );
@@ -133,7 +141,6 @@ function SurpriseButton({ handleSurprise }: { handleSurprise: () => void }) {
       className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleSurprise}
     >
-      {/* <p className="font-bold text-xl lg:text-2xl">Surprise</p> */}
       <Wand />
     </button>
   );
