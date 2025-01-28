@@ -1,78 +1,67 @@
 'use client';
 
 import { Shuffle, Wand } from 'lucide-react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-
-const data = [
-  { id: 'A', ideas: ['Art gallery visit', 'Archery session', 'Amusement park day'] },
-  { id: 'B', ideas: ['Bike ride', 'Beach day', 'Board game night'] },
-  { id: 'C', ideas: ['Cooking class', 'Camping trip', 'Craft workshop'] },
-  { id: 'D', ideas: ['Dance lesson', 'Darts game', 'Dinner date'] },
-  { id: 'E', ideas: ['Escape room', 'Exploring a local market', 'Evening stroll'] },
-  { id: 'F', ideas: ['Fishing trip', 'Farm visit', 'Food truck hopping'] },
-  { id: 'G', ideas: ['Gardening together', 'Golf session', 'Go-kart racing'] },
-  { id: 'H', ideas: ['Hiking adventure', 'Hot air balloon ride', 'Home movie night'] },
-  { id: 'I', ideas: ['Ice skating', 'Indoor rock climbing', 'Imax movie experience'] },
-  { id: 'J', ideas: ['Jazz concert', 'Jigsaw puzzle night', 'Juice bar crawl'] },
-  { id: 'K', ideas: ['Karaoke night', 'Kayaking', 'Kite flying'] },
-  { id: 'L', ideas: ['Library visit', 'Live music event', 'Lunch at a cozy cafe'] },
-  { id: 'M', ideas: ['Museum tour', 'Mountain biking', 'Meditation class'] },
-  { id: 'N', ideas: ['Nature walk', 'Night photography', 'Netflix binge-watch'] },
-  { id: 'O', ideas: ['Outdoor picnic', 'Observatory visit', 'Open mic night'] },
-  { id: 'P', ideas: ['Pottery class', 'Painting workshop', 'Parkour session'] },
-  { id: 'Q', ideas: ['Quiz night', 'Quilting class', 'Quiet coffee date'] },
-  { id: 'R', ideas: ['Rock climbing', 'Road trip', 'Roller skating'] },
-  { id: 'S', ideas: ['Stargazing', 'Scavenger hunt', 'Stand-up comedy show'] },
-  { id: 'T', ideas: ['Theater performance', 'Tennis match', 'Trampoline park'] },
-  { id: 'U', ideas: ['Urban exploration', 'Ultimate frisbee', 'Underground tour'] },
-  { id: 'V', ideas: ['Visit a vineyard', 'Volunteer together', 'Virtual reality gaming'] },
-  { id: 'W', ideas: ['Wine tasting', 'Water park adventure', 'Walk through botanical gardens'] },
-  { id: 'X', ideas: ['Xylophone lesson', 'Xtreme sports', 'Xbox gaming session'] },
-  { id: 'Y', ideas: ['Yoga class', 'Yacht ride', 'Yard sale exploration'] },
-  { id: 'Z', ideas: ['Zoo visit', 'Zip-lining', 'Zumba class'] },
-];
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
-    async function fetchData() {
-      const response = await fetch('/api/data');
+    async function populateData() {
+      const response = await fetch('/api/populate');
       const result = await response.json();
-      console.log(result);
+      console.log('Database populated:', result);
     }
-    fetchData();
+
+    populateData();
   }, []);
 
   const [dateIdea, setDateIdea] = useState('Pick a letter.');
   const [pickedLetter, setPickedLetter] = useState('A');
+  const [viewedIdeas, setViewedIdeas] = useState<string[]>([]);
 
-  function handleLetter(letter: string) {
+  async function handleLetter(letter: string) {
+    async function find(letterId: string): Promise<any> {
+      const response = await fetch(`/api/get?letter=${letterId}`);
+      const result = await response.json();
+      return result;
+    }
+
+    const ideaDate = await find(letter);
     setPickedLetter(letter);
-    const items = data.find((entry) => entry.id === letter);
-    const idea = items?.ideas[0];
-    setDateIdea(idea || 'Something went wrong');
+    setDateIdea(ideaDate.ideas[0]);
+
   }
 
   function shuffle() {
-    const item = data.find((entry) => entry.id === pickedLetter);
-    if (!item) return;
-
-    const availableIdeas = item.ideas.filter((idea) => idea !== dateIdea);
-
-    if (availableIdeas.length === 0) {
-      setDateIdea('No more unique ideas available');
-      return;
+    async function fetchIdeasForLetter(letter: string): Promise<any[]> {
+      const response = await fetch(`/api/get?letter=${letter}`);
+      const result = await response.json();
+      return result?.ideas || [];
     }
 
-    const randomIndex = Math.floor(Math.random() * availableIdeas.length);
-    setDateIdea(availableIdeas[randomIndex]);
+    fetchIdeasForLetter(pickedLetter).then((ideas) => {
+      const availableIdeas = ideas.filter((idea: string) => !viewedIdeas.includes(idea));
+
+      if (availableIdeas.length === 0) {
+        setDateIdea('No more unique ideas available for this letter.');
+        setViewedIdeas([]);
+      } else {
+        const randomIndex = Math.floor(Math.random() * availableIdeas.length);
+        const newIdea = availableIdeas[randomIndex];
+        setDateIdea(newIdea);
+        setViewedIdeas((prev) => [...prev, newIdea]);
+      }
+    });
   }
 
-  function surprise() {
-    const allIdeas = data.flatMap((entry) => entry.ideas);
-    const randomIndex = Math.floor(Math.random() * allIdeas.length);
-    const randomIdea = allIdeas[randomIndex];
-    setDateIdea(randomIdea);
+  async function surprise() {
+    try {
+      const response = await fetch('/api/random');
+      const result = await response.json();
+      setDateIdea(result.idea || 'Something went wrong');
+    } catch (error) {
+      console.error('Error fetching random idea:', error);
+      setDateIdea('Something went wrong');
+    }
   }
 
   return (
@@ -84,8 +73,8 @@ export default function Home() {
 }
 
 function Alphabet({ handleLetter, handleShuffle, handleSurprise }: { handleLetter: (letter: string) => void; handleShuffle: () => void; handleSurprise: () => void }) {
-  const alphabet = data.map((letter) => (
-    <LetterButton key={letter.id} id={letter.id} handleLetter={handleLetter} />
+  const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)).map((letter) => (
+    <LetterButton key={letter} id={letter} handleLetter={handleLetter} />
   ));
 
   return (
@@ -116,7 +105,7 @@ function Display({ dateIdea }: { dateIdea: string }) {
 function LetterButton({ id, handleLetter }: { id: string; handleLetter: (letter: string) => void }) {
   return (
     <button
-      className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={() => handleLetter(id)}
     >
       <p className="font-bold text-xl lg:text-2xl">{id}</p>
@@ -127,7 +116,7 @@ function LetterButton({ id, handleLetter }: { id: string; handleLetter: (letter:
 function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
   return (
     <button
-      className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleShuffle}
     >
       <Shuffle />
@@ -138,7 +127,7 @@ function ShuffleButton({ handleShuffle }: { handleShuffle: () => void }) {
 function SurpriseButton({ handleSurprise }: { handleSurprise: () => void }) {
   return (
     <button
-      className="aspect-square w-full  flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
+      className="aspect-square w-full flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-700"
       onClick={handleSurprise}
     >
       <Wand />

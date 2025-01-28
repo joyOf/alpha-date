@@ -1,14 +1,15 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-// interface IDateIdea extends Document {
-//     id: string;
-//     idea: string[];
-// }
+export interface AlphaDate extends Document {
+    letter: string;
+    ideas: string[];
+}
 
-// const userSchema: Schema = new Schema({
-//     letter: { type: String, required: true, unique: true },
-//     idea: { type: Array, required: true },
-// });
+const AlphaDateSchema: Schema = new Schema({
+    letter: { type: String, required: true },
+    ideas: { type: [String], required: true },
+});
 
-// export const DateIdeaModel = mongoose.model('DateIdea', userSchema);
+const AlphaDateModel: Model<AlphaDate> = mongoose.models.AlphaDate || mongoose.model<AlphaDate>('AlphaDate', AlphaDateSchema);
 
+export default AlphaDateModel;
